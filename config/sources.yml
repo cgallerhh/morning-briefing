@@ -1,0 +1,70 @@
+core_sources:
+  - id: economist_espresso
+    name: The Economist Espresso
+    type: webpage
+    category: world
+    url: https://www.economist.com/espresso
+    priority: core
+    notes: "Kurzbriefing; kann paywall- oder app-gebunden sein."
+  - id: economist_intelligence
+    name: The Intelligence - The Economist
+    type: rss
+    category: world
+    url: https://feeds.acast.com/public/shows/theintelligencepodcast
+    priority: core
+  - id: axios_today
+    name: Axios Today
+    type: webpage
+    category: world
+    url: https://www.axios.com/podcasts/today
+    priority: core
+  - id: straight_arrow_unbiased_updates
+    name: Straight Arrow News - Unbiased Updates
+    type: webpage
+    category: world
+    url: https://san.com/podcasts/the-morning-rundown/
+    priority: core
+  - id: the_decoder
+    name: The Decoder
+    type: webpage
+    category: ai
+    url: https://the-decoder.com/
+    priority: core
+  - id: the_rundown_ai
+    name: The Rundown AI
+    type: webpage
+    category: ai
+    url: https://www.rundown.ai/
+    priority: core
+  - id: the_batch
+    name: The Batch von DeepLearning.AI
+    type: webpage
+    category: ai
+    url: https://www.deeplearning.ai/thebatch/
+    priority: core
+
+supplemental_sources:
+  - id: mit_technology_review_algorithm
+    name: MIT Technology Review - The Algorithm
+    type: webpage
+    category: ai
+    url: https://forms.technologyreview.com/newsletters/ai-demystified-the-algorithm/
+    priority: supplemental
+  - id: stanford_hai
+    name: Stanford HAI
+    type: webpage
+    category: ai_regulation
+    url: https://hai.stanford.edu/news
+    priority: supplemental
+  - id: heise_online
+    name: Heise online
+    type: rss
+    category: de_eu_regulation
+    url: https://www.heise.de/rss/heise-atom.xml
+    priority: supplemental
+  - id: euractiv
+    name: Euractiv
+    type: rss
+    category: de_eu_regulation
+    url: https://www.euractiv.com/feed/
+    priority: supplemental
