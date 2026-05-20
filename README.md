@@ -1,6 +1,6 @@
 # Morning Briefing
 
-Automatisiertes deutschsprachiges Morning Briefing mit Fokus auf Welt-News, KI/AI und EU/Deutschland-Regulierung. Die Pipeline sammelt Meldungen aus einer festen Quellenliste, entfernt Dubletten, erzeugt per OpenAI API ein kompaktes Markdown-Briefing und kann es optional per SMTP versenden.
+Automatisiertes deutschsprachiges Morning Briefing mit Fokus auf Welt-News, KI/AI und EU/Deutschland-Regulierung. Die Pipeline sammelt Meldungen aus einer festen Quellenliste, entfernt Dubletten und erzeugt per OpenAI API ein kompaktes Markdown-Briefing.
 
 ## Struktur
 
@@ -10,7 +10,7 @@ Automatisiertes deutschsprachiges Morning Briefing mit Fokus auf Welt-News, KI/A
 - `src/generate_briefing.py` - erzeugt das deutsche Briefing via OpenAI
 - `src/send_email.py` - optionaler SMTP-Versand
 - `outputs/` - erzeugte Briefings als Markdown
-- `.github/workflows/morning-briefing.yml` - werktäglicher GitHub-Actions-Lauf plus manuelle Ausfuehrung
+- `.github/workflows/morning-briefing.yml` - werktaeglicher GitHub-Actions-Lauf plus manuelle Ausfuehrung
 
 ## Quellen
 
@@ -46,17 +46,27 @@ python -m src.generate_briefing
 
 Das Ergebnis wird als `outputs/morning-briefing-YYYY-MM-DD.md` gespeichert. Der Sammelschritt schreibt zusaetzlich `outputs/collected-sources.json`, damit nachvollziehbar bleibt, welche Quellen und Fehler in den Lauf eingegangen sind.
 
-## Optionaler Mailversand
+## GitHub Actions
 
-```bash
-export SMTP_HOST="smtp.example.com"
-export SMTP_PORT="587"
-export SMTP_USERNAME="..."
-export SMTP_PASSWORD="..."
-export SMTP_FROM="briefing@example.com"
-export SMTP_TO="person@example.com,team@example.com"
-python -m src.send_email outputs/morning-briefing-YYYY-MM-DD.md
+Der Workflow ist manuell per `workflow_dispatch` startbar und laeuft werktags per Cron:
+
+```yaml
+0 5 * * 1-5
 ```
+
+GitHub-Cron laeuft in UTC. `05:00 UTC` ist eine Sommerzeit-Naeherung fuer `07:00 Europe/Berlin`. In der Winterzeit muss der Cron-Ausdruck auf `06:00 UTC` angepasst werden, sofern keine separate Timezone-Unterstuetzung genutzt wird.
+
+### Workflow manuell starten
+
+1. Repository auf GitHub oeffnen.
+2. Den Tab `Actions` waehlen.
+3. Links den Workflow `Morning Briefing` anklicken.
+4. Rechts `Run workflow` auswaehlen.
+5. Den gewuenschten Branch auswaehlen, zum Beispiel `main` nach dem Merge.
+6. Noch einmal `Run workflow` bestaetigen.
+7. Nach Abschluss des Laufs den Run oeffnen und unter `Artifacts` die Datei `morning-briefing-...` herunterladen.
+
+Der Workflow erzeugt `outputs/morning-briefing-YYYY-MM-DD.md` und laedt diese Markdown-Datei zusammen mit `outputs/collected-sources.json` als GitHub Actions Artifact hoch. Die Datei wird in dieser Minimalversion nicht automatisch committed.
 
 ## GitHub Secrets und Variablen
 
@@ -68,7 +78,7 @@ Optionale Repository Variable:
 
 - `OPENAI_MODEL` - OpenAI-Modell, Standard im Workflow: `gpt-4o-mini`
 
-Optionale Secrets fuer SMTP:
+Spaeter benoetigte Secrets fuer SMTP-Mailversand:
 
 - `SMTP_HOST`
 - `SMTP_PORT`
@@ -77,22 +87,28 @@ Optionale Secrets fuer SMTP:
 - `SMTP_FROM`
 - `SMTP_TO`
 
-Optionale Repository Variablen fuer SMTP:
+Spaeter optionale Repository Variablen fuer SMTP:
 
 - `SEND_EMAIL` - auf `true` setzen, um Mailversand im Workflow zu aktivieren
 - `SMTP_SUBJECT` - eigener Betreff
 
-Es werden keine Secrets ins Repository geschrieben. Fehlende Pflichtwerte fuehren zu einem sichtbaren Fehler.
+Der Mailversand ist vorbereitet (`src/send_email.py`), aber im aktuellen Workflow bewusst noch nicht aktiviert. Wetterdaten sind ebenfalls noch nicht aktiviert.
 
-## GitHub Actions
+Es werden keine Secrets ins Repository geschrieben. Fehlende Pflichtwerte fuehren zu einem sichtbaren Fehler. Nicht erreichbare Einzelquellen brechen den Sammellauf nicht ab; sie werden in `outputs/collected-sources.json` unter `source_errors` protokolliert.
 
-Der Workflow ist manuell per `workflow_dispatch` startbar und laeuft werktags per Cron:
+## Optionaler Mailversand lokal vorbereitet
 
-```yaml
-0 5 * * 1-5
+Der Mailversand ist nur vorbereitet und noch nicht Teil des stabilen Minimal-Workflows. Lokal kann er spaeter so getestet werden:
+
+```bash
+export SMTP_HOST="smtp.example.com"
+export SMTP_PORT="587"
+export SMTP_USERNAME="..."
+export SMTP_PASSWORD="..."
+export SMTP_FROM="briefing@example.com"
+export SMTP_TO="person@example.com,team@example.com"
+python -m src.send_email outputs/morning-briefing-YYYY-MM-DD.md
 ```
-
-GitHub-Cron laeuft in UTC. `05:00 UTC` ist eine Sommerzeit-Naeherung fuer `07:00 Europe/Berlin`. In der Winterzeit muss der Cron-Ausdruck auf `06:00 UTC` angepasst werden, sofern keine separate Timezone-Unterstuetzung genutzt wird.
 
 ## Tests
 

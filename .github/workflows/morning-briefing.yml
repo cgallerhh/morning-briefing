@@ -9,8 +9,10 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Berlin
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Check out repository
@@ -38,22 +40,12 @@ jobs:
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o-mini' }}
         run: python -m src.generate_briefing --input outputs/collected-sources.json --prompt prompts/morning_briefing_prompt.md --output-dir outputs
 
-      - name: Send email
-        if: ${{ vars.SEND_EMAIL == 'true' }}
-        env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM }}
-          SMTP_TO: ${{ secrets.SMTP_TO }}
-          SMTP_SUBJECT: ${{ vars.SMTP_SUBJECT }}
-        run: python -m src.send_email "outputs/morning-briefing-$(date +%F).md"
-
-      - name: Commit generated briefing
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add outputs/
-          git diff --cached --quiet || git commit -m "Add morning briefing $(date +%F)"
-          git push
+      - name: Upload briefing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: morning-briefing-${{ github.run_id }}
+          path: |
+            outputs/morning-briefing-*.md
+            outputs/collected-sources.json
+          if-no-files-found: error
+          retention-days: 14
