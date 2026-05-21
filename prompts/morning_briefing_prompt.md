@@ -17,6 +17,9 @@ Erstelle aus den gelieferten Quellen ein kompaktes Morning Briefing auf Deutsch.
 - Nutze fuer die Quellenlage bevorzugt `supporting_sources`; mehr als ein Eintrag bedeutet `mehrfach bestaetigt`.
 - Keine Clickbait-Sprache, keine Spekulation, keine langen Artikelnacherzaehlungen.
 - Jeder Punkt braucht eine kurze Bewertung: Warum ist das wichtig?
+- Schreibe die Bewertung natuerlich in den Fliesstext hinein, nicht als separates Feld `Relevanz`.
+- Platziere Quellenlinks elegant im Fliesstext. Beispiel: `Der [Economist](https://...) berichtet, dass ...`
+- Verwende keine starren Label-Bloecke wie `Thema:`, `Kurzfassung:` oder `Relevanz:` innerhalb einzelner Meldungen.
 - Wenn Quellen nicht erreichbar waren, erwaehne das knapp in der Quellen- oder Hinweislogik, aber erfinde keine Inhalte.
 - Schreibe praezise, knapp und auf Deutsch.
 
@@ -39,17 +42,13 @@ Maximal 5 Saetze. Was ist heute wirklich wichtig?
 ## 2. Weltlage
 
 5 bis 7 Punkte. Je Punkt:
-- **Thema:** ...
-- **Kurzfassung:** ...
-- **Relevanz:** ...
+- **Headline als kurzer Satz.** Danach 2 bis 4 Saetze Fliesstext: kurze Zusammenfassung, eingeordnete Bedeutung und mindestens ein elegant eingebetteter Quellenlink im Satz.
 - **Quellenlage:** mehrfach bestaetigt / Einzelquelle; Quellen nennen
 
 ## 3. KI/AI
 
 5 bis 8 Punkte. Je Punkt:
-- **Thema:** ...
-- **Kurzfassung:** ...
-- **Relevanz fuer Unternehmen, Regulierung oder IT:** ...
+- **Headline als kurzer Satz.** Danach 2 bis 4 Saetze Fliesstext: kurze Zusammenfassung, eingeordnete Bedeutung fuer Unternehmen, Regulierung oder IT und mindestens ein elegant eingebetteter Quellenlink im Satz.
 - **Quellenlage:** mehrfach bestaetigt / Einzelquelle; Quellen nennen
 
 ## 4. Deutschland / EU / Regulierung
@@ -57,10 +56,13 @@ Maximal 5 Saetze. Was ist heute wirklich wichtig?
 3 bis 5 Punkte mit Fokus auf Digitalpolitik, KI-Regulierung, Datenschutz, Security, Plattformregulierung und EU-Politik.
 
 Je Punkt:
-- **Thema:** ...
-- **Kurzfassung:** ...
-- **Relevanz:** ...
+- **Headline als kurzer Satz.** Danach 2 bis 4 Saetze Fliesstext: kurze Zusammenfassung, eingeordnete Bedeutung und mindestens ein elegant eingebetteter Quellenlink im Satz.
 - **Quellenlage:** mehrfach bestaetigt / Einzelquelle; Quellen nennen
+
+# Beispiel fuer den gewuenschten Stil
+
+- **Israel startet in einen neuen Wahlkampf.** Der [Economist](https://example.com) berichtet, dass eine Parlamentsabstimmung den Wahlkampf ausgeloest hat; im Zentrum steht die Frage, ob Benjamin Netanyahus politische Zeit endet. Das ist wichtig, weil politische Instabilitaet in Israel direkte Folgen fuer regionale Sicherheit, Energiepreise und internationale Diplomatie haben kann.
+- **Quellenlage:** Einzelquelle; The Intelligence - The Economist
 
 ## 5. Beobachtungsliste fuer heute
 
