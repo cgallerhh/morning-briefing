@@ -6,7 +6,7 @@ Automatisiertes deutschsprachiges Morning Briefing mit Fokus auf Welt-News, KI/A
 
 - `config/sources.yml` - feste Kern- und Ergaenzungsquellen
 - `prompts/morning_briefing_prompt.md` - Redaktionsprompt und Ausgabeformat
-- `src/collect_sources.py` - sammelt RSS-Feeds und Webseiten, protokolliert Ausfaelle, entfernt Dubletten
+- `src/collect_sources.py` - sammelt RSS-Feeds, Webseiten und Wetterdaten, protokolliert Ausfaelle, entfernt Dubletten
 - `src/generate_briefing.py` - erzeugt das deutsche Briefing via OpenAI
 - `src/send_email.py` - Gmail-kompatibler SMTP-Versand als formatierte HTML-Mail
 - `outputs/` - erzeugte Briefings als Markdown
@@ -32,6 +32,10 @@ Ergaenzungsquellen:
 4. Euractiv
 
 Die konkrete Konfiguration liegt in `config/sources.yml`. Wenn einzelne Quellen keine stabilen RSS-Feeds anbieten oder Paywalls/App-Zugriff nutzen, versucht die Sammlung eine Webseiten-Auswertung und fuehrt Ausfaelle sichtbar im Zwischenergebnis auf.
+
+## Wetter
+
+Das Briefing enthaelt einen kurzen Wetterabschnitt fuer `21077 Hamburg`. Die Daten kommen von Open-Meteo und benoetigen keinen API-Key. Wenn der Wetterdienst nicht erreichbar ist, wird der Fehler nur in `outputs/collected-sources.json` protokolliert; das Briefing laeuft weiter.
 
 ## Lokale Ausfuehrung
 
@@ -91,7 +95,7 @@ Optionale SMTP-Secrets fuer spaetere Anpassungen:
 - `SMTP_PASSWORD` - Alternative zu `GMAIL_APP_PASSWORD`
 - `SMTP_SUBJECT` - eigener Betreff, falls der Standard `Morning Briefing` nicht gewuenscht ist
 
-Der Workflow nutzt aktuell fest `christian.galler@gmail.com` als Absender und Empfaenger. Wetterdaten sind nicht aktiviert.
+Der Workflow nutzt aktuell fest `christian.galler@gmail.com` als Absender und Empfaenger.
 
 Es werden keine Secrets ins Repository geschrieben. Fehlende Pflichtwerte fuehren zu einem sichtbaren Fehler. Nicht erreichbare Einzelquellen brechen den Sammellauf nicht ab; sie werden in `outputs/collected-sources.json` unter `source_errors` protokolliert.
 

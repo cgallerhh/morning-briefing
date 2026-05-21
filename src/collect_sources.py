@@ -19,6 +19,30 @@ from dateutil import parser as date_parser
 
 LOGGER = logging.getLogger("morning_briefing.collect")
 USER_AGENT = "morning-briefing/1.0 (+https://github.com/cgallerhh/morning-briefing)"
+OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
+WEATHER_CODES = {
+    0: "klar",
+    1: "ueberwiegend klar",
+    2: "teilweise bewoelkt",
+    3: "bedeckt",
+    45: "neblig",
+    48: "Reifnebel",
+    51: "leichter Nieselregen",
+    53: "Nieselregen",
+    55: "starker Nieselregen",
+    61: "leichter Regen",
+    63: "Regen",
+    65: "starker Regen",
+    71: "leichter Schnee",
+    73: "Schnee",
+    75: "starker Schnee",
+    80: "leichte Regenschauer",
+    81: "Regenschauer",
+    82: "starke Regenschauer",
+    95: "Gewitter",
+    96: "Gewitter mit leichtem Hagel",
+    99: "Gewitter mit starkem Hagel",
+}
 
 
 @dataclass
@@ -84,10 +108,66 @@ def load_sources(path: Path) -> list[dict[str, Any]]:
     return [*(data.get("core_sources") or []), *(data.get("supplemental_sources") or [])]
 
 
+def load_config(path: Path) -> dict[str, Any]:
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
 def fetch_url(url: str, timeout: int) -> requests.Response:
     response = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout)
     response.raise_for_status()
     return response
+
+
+def weather_description(code: int | None) -> str | None:
+    if code is None:
+        return None
+    return WEATHER_CODES.get(code, f"Wettercode {code}")
+
+
+def collect_weather(weather_config: dict[str, Any] | None, timeout: int) -> dict[str, Any] | None:
+    if not weather_config:
+        return None
+
+    params = {
+        "latitude": weather_config["latitude"],
+        "longitude": weather_config["longitude"],
+        "timezone": weather_config.get("timezone", "Europe/Berlin"),
+        "forecast_days": 1,
+        "current": "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m",
+        "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset",
+    }
+    response = requests.get(OPEN_METEO_URL, params=params, headers={"User-Agent": USER_AGENT}, timeout=timeout)
+    response.raise_for_status()
+    data = response.json()
+    current = data.get("current") or {}
+    daily = data.get("daily") or {}
+    daily_code = (daily.get("weather_code") or [None])[0]
+    current_code = current.get("weather_code")
+
+    return {
+        "location": weather_config.get("name", "Hamburg 21077"),
+        "provider": weather_config.get("provider", "Open-Meteo"),
+        "retrieved_at": utc_now().isoformat(),
+        "current": {
+            "time": current.get("time"),
+            "temperature_c": current.get("temperature_2m"),
+            "relative_humidity_percent": current.get("relative_humidity_2m"),
+            "precipitation_mm": current.get("precipitation"),
+            "wind_speed_kmh": current.get("wind_speed_10m"),
+            "weather_code": current_code,
+            "description": weather_description(current_code),
+        },
+        "today": {
+            "date": (daily.get("time") or [None])[0],
+            "temperature_max_c": (daily.get("temperature_2m_max") or [None])[0],
+            "temperature_min_c": (daily.get("temperature_2m_min") or [None])[0],
+            "precipitation_probability_max_percent": (daily.get("precipitation_probability_max") or [None])[0],
+            "sunrise": (daily.get("sunrise") or [None])[0],
+            "sunset": (daily.get("sunset") or [None])[0],
+            "weather_code": daily_code,
+            "description": weather_description(daily_code),
+        },
+    }
 
 
 def collect_rss(source: dict[str, Any], timeout: int) -> list[SourceItem]:
@@ -202,8 +282,9 @@ def collect_sources(config_path: Path, output_path: Path, hours: int, timeout: i
     now = utc_now()
     collected: list[SourceItem] = []
     errors: list[dict[str, str]] = []
+    config = load_config(config_path)
 
-    for source in load_sources(config_path):
+    for source in [*(config.get("core_sources") or []), *(config.get("supplemental_sources") or [])]:
         try:
             LOGGER.info("Collecting %s", source["name"])
             items = collect_rss(source, timeout) if source.get("type") == "rss" else collect_webpage(source, timeout)
@@ -214,10 +295,22 @@ def collect_sources(config_path: Path, output_path: Path, hours: int, timeout: i
             LOGGER.exception("Could not collect %s", source.get("name", source.get("id", "unknown")))
             errors.append({"source": source.get("name", source.get("id", "unknown")), "error": str(exc)})
 
+    weather = None
+    weather_error = None
+    try:
+        weather = collect_weather(config.get("weather"), timeout)
+        if weather:
+            LOGGER.info("Collected weather for %s", weather["location"])
+    except Exception as exc:  # noqa: BLE001 - weather should not block the briefing.
+        LOGGER.exception("Could not collect weather")
+        weather_error = str(exc)
+
     unique_items = deduplicate_items(collected)
     payload = {
         "generated_at": now.isoformat(),
         "recency_window_hours": hours,
+        "weather": weather,
+        "weather_error": weather_error,
         "items": [asdict(item) for item in unique_items],
         "source_errors": errors,
     }
