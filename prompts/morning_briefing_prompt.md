@@ -19,6 +19,8 @@ Erstelle aus den gelieferten Quellen ein kompaktes Morning Briefing auf Deutsch.
 - Platziere Quellenlinks elegant im Fliesstext. Beispiel: `Der [Economist](https://...) berichtet, dass ...`
 - Verwende keine starren Label-Bloecke wie `Thema:`, `Kurzfassung:`, `Relevanz:` oder `Quellenlage:` innerhalb einzelner Meldungen.
 - Erwaehne nicht erreichbare Quellen nicht im Briefing-Text. Sie werden technisch im JSON protokolliert.
+- Wenn Wetterdaten im Feld `weather` geliefert werden, gib direkt nach dem Titel einen kurzen Abschnitt `## Wetter Hamburg 21077` aus.
+- Der Wetterabschnitt umfasst 1 bis 2 Saetze mit aktueller Temperatur, Tagesbandbreite, Wetterlage, Regenwahrscheinlichkeit und Wind, sofern verfuegbar.
 - Schreibe praezise, knapp und auf Deutsch.
 
 # Auswahl- und Priorisierungslogik
@@ -32,6 +34,10 @@ Erstelle aus den gelieferten Quellen ein kompaktes Morning Briefing auf Deutsch.
 # Ausgabeformat
 
 # Morning Briefing - {Datum}
+
+## Wetter Hamburg 21077
+
+1 bis 2 Saetze aus dem gelieferten Feld `weather`. Keine Wetterquellenliste, keine technischen Hinweise.
 
 ## 1. Executive Summary
 

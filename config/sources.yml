@@ -68,3 +68,11 @@ supplemental_sources:
     category: de_eu_regulation
     url: https://www.euractiv.com/feed/
     priority: supplemental
+
+weather:
+  id: hamburg_21077
+  name: Hamburg 21077
+  provider: Open-Meteo
+  latitude: 53.4609
+  longitude: 9.9794
+  timezone: Europe/Berlin

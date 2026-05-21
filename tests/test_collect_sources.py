@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from src.collect_sources import SourceItem, deduplicate_items, duplicate_key, is_recent, parse_date
+from src.collect_sources import SourceItem, collect_weather, deduplicate_items, duplicate_key, is_recent, parse_date
 
 
 def test_parse_date_returns_utc_datetime() -> None:
@@ -63,3 +63,55 @@ def test_deduplicate_items_keeps_first_item() -> None:
 
     assert result == [first]
     assert result[0].supporting_sources == ["A", "B"]
+
+
+def test_collect_weather_maps_open_meteo_response(monkeypatch) -> None:
+    class FakeResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {
+                "current": {
+                    "time": "2026-05-21T10:00",
+                    "temperature_2m": 17.4,
+                    "relative_humidity_2m": 62,
+                    "precipitation": 0,
+                    "weather_code": 2,
+                    "wind_speed_10m": 13.2,
+                },
+                "daily": {
+                    "time": ["2026-05-21"],
+                    "weather_code": [61],
+                    "temperature_2m_max": [19.1],
+                    "temperature_2m_min": [9.5],
+                    "precipitation_probability_max": [40],
+                    "sunrise": ["2026-05-21T05:08"],
+                    "sunset": ["2026-05-21T21:25"],
+                },
+            }
+
+    def fake_get(url, params, headers, timeout):  # noqa: ANN001
+        assert "api.open-meteo.com" in url
+        assert params["latitude"] == 53.4609
+        assert timeout == 10
+        return FakeResponse()
+
+    monkeypatch.setattr("src.collect_sources.requests.get", fake_get)
+
+    weather = collect_weather(
+        {
+            "name": "Hamburg 21077",
+            "provider": "Open-Meteo",
+            "latitude": 53.4609,
+            "longitude": 9.9794,
+            "timezone": "Europe/Berlin",
+        },
+        timeout=10,
+    )
+
+    assert weather is not None
+    assert weather["location"] == "Hamburg 21077"
+    assert weather["current"]["description"] == "teilweise bewoelkt"
+    assert weather["today"]["description"] == "leichter Regen"
+    assert weather["today"]["precipitation_probability_max_percent"] == 40
