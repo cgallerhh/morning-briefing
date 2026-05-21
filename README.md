@@ -8,7 +8,7 @@ Automatisiertes deutschsprachiges Morning Briefing mit Fokus auf Welt-News, KI/A
 - `prompts/morning_briefing_prompt.md` - Redaktionsprompt und Ausgabeformat
 - `src/collect_sources.py` - sammelt RSS-Feeds und Webseiten, protokolliert Ausfaelle, entfernt Dubletten
 - `src/generate_briefing.py` - erzeugt das deutsche Briefing via OpenAI
-- `src/send_email.py` - optionaler SMTP-Versand
+- `src/send_email.py` - Gmail-kompatibler SMTP-Versand als formatierte HTML-Mail
 - `outputs/` - erzeugte Briefings als Markdown
 - `.github/workflows/morning-briefing.yml` - werktaeglicher GitHub-Actions-Lauf plus manuelle Ausfuehrung
 
@@ -82,35 +82,31 @@ Optionale Repository Variable:
 
 Wenn `OPENAI_MODEL` versehentlich als Secret statt als Variable angelegt wurde, nutzt der Workflow diesen Wert ebenfalls.
 
-Spaeter benoetigte Secrets fuer SMTP-Mailversand:
+Zusaetzlich benoetigtes Secret fuer Gmail-Mailversand:
 
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
-- `SMTP_FROM`
-- `SMTP_TO`
+- `GMAIL_APP_PASSWORD` - Gmail-App-Passwort fuer `christian.galler@gmail.com`
 
-Spaeter optionale Repository Variablen fuer SMTP:
+Optionale SMTP-Secrets fuer spaetere Anpassungen:
 
-- `SEND_EMAIL` - auf `true` setzen, um Mailversand im Workflow zu aktivieren
-- `SMTP_SUBJECT` - eigener Betreff
+- `SMTP_PASSWORD` - Alternative zu `GMAIL_APP_PASSWORD`
+- `SMTP_SUBJECT` - eigener Betreff, falls der Standard `Morning Briefing` nicht gewuenscht ist
 
-Der Mailversand ist vorbereitet (`src/send_email.py`), aber im aktuellen Workflow bewusst noch nicht aktiviert. Wetterdaten sind ebenfalls noch nicht aktiviert.
+Der Workflow nutzt aktuell fest `christian.galler@gmail.com` als Absender und Empfaenger. Wetterdaten sind nicht aktiviert.
 
 Es werden keine Secrets ins Repository geschrieben. Fehlende Pflichtwerte fuehren zu einem sichtbaren Fehler. Nicht erreichbare Einzelquellen brechen den Sammellauf nicht ab; sie werden in `outputs/collected-sources.json` unter `source_errors` protokolliert.
 
-## Optionaler Mailversand lokal vorbereitet
+## Mailversand ueber Gmail
 
-Der Mailversand ist nur vorbereitet und noch nicht Teil des stabilen Minimal-Workflows. Lokal kann er spaeter so getestet werden:
+Der Workflow sendet das Briefing zusaetzlich als formatierte HTML-Mail ueber den Gmail-Account `christian.galler@gmail.com` an `christian.galler@gmail.com`. Dafuer wird ein Gmail-App-Passwort als GitHub Secret benoetigt.
+
+Zusaetzlich benoetigtes Secret:
+
+- `GMAIL_APP_PASSWORD` - Gmail-App-Passwort fuer `christian.galler@gmail.com`
+
+Lokaler Test:
 
 ```bash
-export SMTP_HOST="smtp.example.com"
-export SMTP_PORT="587"
-export SMTP_USERNAME="..."
-export SMTP_PASSWORD="..."
-export SMTP_FROM="briefing@example.com"
-export SMTP_TO="person@example.com,team@example.com"
+export GMAIL_APP_PASSWORD="..."
 python -m src.send_email outputs/morning-briefing-YYYY-MM-DD.md
 ```
 

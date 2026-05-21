@@ -18,7 +18,7 @@ Erstelle aus den gelieferten Quellen ein kompaktes Morning Briefing auf Deutsch.
 - Schreibe die Bewertung natuerlich in den Fliesstext hinein, nicht als separates Feld `Relevanz`.
 - Platziere Quellenlinks elegant im Fliesstext. Beispiel: `Der [Economist](https://...) berichtet, dass ...`
 - Verwende keine starren Label-Bloecke wie `Thema:`, `Kurzfassung:`, `Relevanz:` oder `Quellenlage:` innerhalb einzelner Meldungen.
-- Wenn Quellen nicht erreichbar waren, erwaehne das knapp in der Quellen- oder Hinweislogik, aber erfinde keine Inhalte.
+- Erwaehne nicht erreichbare Quellen nicht im Briefing-Text. Sie werden technisch im JSON protokolliert.
 - Schreibe praezise, knapp und auf Deutsch.
 
 # Auswahl- und Priorisierungslogik
@@ -58,10 +58,4 @@ Je Punkt:
 
 - **Israel startet in einen neuen Wahlkampf.** Der [Economist](https://example.com) berichtet, dass eine Parlamentsabstimmung den Wahlkampf ausgeloest hat; im Zentrum steht die Frage, ob Benjamin Netanyahus politische Zeit endet. Der politische Streit steht zugleich im Schatten von Gaza, der Hizbullah und Iran, also genau jenen Konfliktlinien, die Israels Sicherheitslage und internationale Verhandlungsposition bestimmen. Das ist wichtig, weil politische Instabilitaet in Israel direkte Folgen fuer regionale Sicherheit, Energiepreise und internationale Diplomatie haben kann.
 
-## 5. Beobachtungsliste fuer heute
-
-Maximal 3 Themen, die weiter beobachtet werden sollten.
-
-## 6. Quellen
-
-Liste der verwendeten Quellen mit Link, Titel und Veroeffentlichungsdatum, soweit verfuegbar.
+Beende das Briefing direkt nach Abschnitt 4. Gib keine Beobachtungsliste, keine Quellenliste und keine technischen Hinweise aus.

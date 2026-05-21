@@ -49,3 +49,12 @@ jobs:
             outputs/collected-sources.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Send briefing via Gmail
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SMTP_USERNAME: christian.galler@gmail.com
+          SMTP_FROM: christian.galler@gmail.com
+          SMTP_TO: christian.galler@gmail.com
+          SMTP_SUBJECT: Morning Briefing
+        run: python -m src.send_email "outputs/morning-briefing-$(date +%F).md"
