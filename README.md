@@ -74,9 +74,13 @@ Erforderliches Secret:
 
 - `OPENAI_API_KEY` - API-Key fuer die Briefing-Erstellung
 
+Der Workflow akzeptiert zusaetzlich den vorhandenen Secret-Namen `openAiAPI` als Fallback. Empfohlen ist langfristig trotzdem `OPENAI_API_KEY`, weil dieser Name in Tools und Dokumentationen ueblich ist.
+
 Optionale Repository Variable:
 
 - `OPENAI_MODEL` - OpenAI-Modell, Standard im Workflow: `gpt-4o-mini`
+
+Wenn `OPENAI_MODEL` versehentlich als Secret statt als Variable angelegt wurde, nutzt der Workflow diesen Wert ebenfalls.
 
 Spaeter benoetigte Secrets fuer SMTP-Mailversand:
 
